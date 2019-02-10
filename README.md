@@ -9,6 +9,7 @@
 
 ## Step 1 - Create Lambda functions
 Run the following command:
+
     aws cloudformation create-stack --stack-name functions --template-body file://functions.yml --capabilities CAPABILITY_IAM
 
 Verify it: `aws lambda list-functions`
