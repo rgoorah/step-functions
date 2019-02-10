@@ -63,17 +63,17 @@ Resources:
                   "States": {
                     "Open Case": {
                       "Type": "Task",
-                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:OpenCase",
+                      "Resource": "arn:aws:lambda:us-east-2:AWS_ACCOUNT_ID:function:OpenCase",
                       "Next": "Assign Case"
                     }, 
                     "Assign Case": {
                       "Type": "Task",
-                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:AssignCase",
+                      "Resource": "arn:aws:lambda:us-east-2:AWS_ACCOUNT_ID:function:AssignCase",
                       "Next": "Work on Case"
                     },
                     "Work on Case": {
                       "Type": "Task",
-                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:WorkOnCase",
+                      "Resource": "arn:aws:lambda:us-east-2:AWS_ACCOUNT_ID:function:WorkOnCase",
                       "Next": "Is Case Resolved"
                     },
                     "Is Case Resolved": {
@@ -93,12 +93,12 @@ Resources:
                     },
                      "Close Case": {
                       "Type": "Task",
-                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:CloseCase",
+                      "Resource": "arn:aws:lambda:us-east-2:AWS_ACCOUNT_ID:function:CloseCase",
                       "End": true
                     },
                     "Escalate Case": {
                       "Type": "Task",
-                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:EscalateCase",
+                      "Resource": "arn:aws:lambda:us-east-2:AWS_ACCOUNT_ID:function:EscalateCase",
                       "Next": "Fail"
                     },
                     "Fail": {
