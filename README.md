@@ -37,6 +37,9 @@ Type this in the input box:
 
 * Click 'Start execution'
 
+## Step 4 - Oberve the input and output of the steps
+Click on any step to see the inputs and outputs
+
 ![diagram](state-machine.png)
 
 ![diagram](state-machine3.png)
