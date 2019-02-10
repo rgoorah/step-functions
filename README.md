@@ -7,7 +7,7 @@ To solve this challenge, you decide to use AWS Step Functions. Step Functions is
 
 In the next 30 minutes, you will create a Step Functions state machine to describe the current call center process, create a few simple Lambda functions that simulate the tasks of the support team, and pass data between each Lambda function to track the progress of the support case. Then, you’ll perform several tests of your workflow to observe how it responds to different inputs. Finally, you’ll delete the AWS resources you used in the tutorial.
 
-You'll use AWS Step Functions and AWS Lambda in this tutorial. These services are within the AWS Free Tier.
+You'll use AWS Step Functions and AWS Lambda, and AWS CloudFormation in this tutorial. These services are within the AWS Free Tier.
 
 ![diagram](state-machine.png)
 
