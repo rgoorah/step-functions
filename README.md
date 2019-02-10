@@ -5,7 +5,7 @@
 * Clean resources - ./cleanup
 
 ## Before you begin
-Create AWS account with IAM user that has administrator permissions:
+1) Create AWS account with IAM user that has administrator permissions:
 * Search for IAM
 * Click Users
 * Click Add user
@@ -20,3 +20,21 @@ Create AWS account with IAM user that has administrator permissions:
 * Click Create user 
 * Download .csv with credentials
 
+
+2) Setup AWS CLI
+Open the terminal of your laptop:
+```
+sudo apt install python-pip
+pip install awscli --upgrade --user
+aws configure
+AWS Access Key ID: copy paste from the csv file
+AWS Secret Access Key: copy paste from the csv file
+Defualt region name: us-east-2
+Default output format: hit enter
+```
+
+3) Verify that AWS CLI is working
+```
+aws s3 ls
+```
+This should display your S3 buckets. If this is a new accound you will see nothing.
