@@ -38,7 +38,7 @@ Verify it by running this command: `aws stepfunctions list-state-machines` and a
 
 ## Step 3 - Execute the state machine
 * Search for Step Functions at the AWS Web Console
-* Click on MyStateMachine
+* Click on CallCenter
 * Click 'Start execution'
 
 Type this in the input box:
