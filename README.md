@@ -15,8 +15,7 @@ You'll use AWS Step Functions and AWS Lambda in this tutorial. These services ar
 [Create AWS account with IAM user that has administrator permissions](prerequisites.md)
 
 ## Step 1 - Create Lambda functions
-Run the following command:
-
+Create the CloudFormation stack for the Lambda functions:
 ```
 aws cloudformation create-stack --stack-name functions --template-body file://call-center-functions.yml --capabilities CAPABILITY_IAM
 ```
@@ -24,8 +23,12 @@ aws cloudformation create-stack --stack-name functions --template-body file://ca
 Verify it by running this command: `aws lambda list-functions` and also look at the AWS Web Console under 'Lambda'.
 
 ## Step 2 - Create the state machine
-1. Update the state machine file with your AWS Account ID by running this script: `./replace-account-id.sh`
-1. Run the following command:
+1) Update the state machine file with your AWS Account ID:
+```
+perl -i -pe"s/AWS_ACCOUNT_ID/$(aws sts get-caller-identity --output text --query 'Account')/g" call-center.yml
+```
+
+2) Create the CloudFormation stack for the state machine:
 
 ```
 aws cloudformation create-stack --stack-name call-center --template-body file://call-center.yml --capabilities CAPABILITY_IAM
@@ -52,3 +55,9 @@ Click on any state to see the inputs and outputs
 ![diagram](state-machine2.png)
 
 ![diagram](state-machine3.png)
+
+## Step 5 - Cleanup the AWS resources
+```
+aws cloudformation delete-stack --stack-name call-center
+aws cloudformation delete-stack --stack-name call-center-functions
+```
