@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda Functions
+Resources:
+  LambdaExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+
+  OpenCase:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.handler"
+      Role: !GetAtt [ LambdaExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => {
+            // Create a support case using the input as the case ID, then return a confirmation message   
+           var myCaseID = event.inputCaseID;
+           var myMessage = "Case " + myCaseID + ": opened...";   
+           var result = {Case: myCaseID, Message: myMessage};
+           callback(null, result);    
+          };
+      Runtime: "nodejs8.10"
+      Timeout: "25"
+
+  AssignCase:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.handler"
+      Role: !GetAtt [ LambdaExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => {    
+            // Assign the support case and update the status message    
+            var myCaseID = event.Case;    
+            var myMessage = event.Message + "assigned...";    
+            var result = {Case: myCaseID, Message: myMessage};
+            callback(null, result);        
+          };
+      Runtime: "nodejs8.10"
+      Timeout: "25"
+
