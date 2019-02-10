@@ -26,8 +26,8 @@ Resources:
   CallCenterStateMachine:
     Type: "AWS::StepFunctions::StateMachine"
     Properties:
-      StateMachineName: ""
-      DefinitionString: "CallCenter"
+      StateMachineName: "CallCenter"
+      DefinitionString:
         !Sub
           - |-
                 {
