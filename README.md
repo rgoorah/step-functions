@@ -30,7 +30,7 @@ Verify it by running this command: `aws lambda list-functions` and also look at 
 perl -i -pe"s/AWS_ACCOUNT_ID/$(aws sts get-caller-identity --output text --query 'Account')/g" call-center.yml
 ```
 
-2) Copy the content of [this page](https://raw.githubusercontent.com/oren/step-functions/master/call-center.yml) into a file called call-center-functions.yml
+2) Copy the content of [this page](https://raw.githubusercontent.com/oren/step-functions/master/call-center.yml) into a file called call-center.yml
 3) Create the CloudFormation stack for the state machine:
 
 ```
