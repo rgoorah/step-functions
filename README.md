@@ -1,6 +1,6 @@
 # Step Functions Code Along
 
-![diagram](state-machine2.png)
+![diagram](state-machine.png)
 
 ## Step 0 - Prerequisites
 [Create AWS account with IAM user that has administrator permissions](prerequisites.md)
@@ -40,6 +40,6 @@ Type this in the input box:
 ## Step 4 - Oberve the input and output of the steps
 Click on any step to see the inputs and outputs
 
-![diagram](state-machine.png)
+![diagram](state-machine2.png)
 
 ![diagram](state-machine3.png)
