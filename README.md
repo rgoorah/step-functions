@@ -1,8 +1,6 @@
 # Step Functions Code Along
 
-![diagram](state-machine.png)
-* Create CloudFormation stack - ./deploy
-* Clean resources - ./cleanup
+![diagram](state-machine2.png)
 
 ## Step 0 - Prerequisites
 [Create AWS account with IAM user that has administrator permissions](prerequisites.md)
@@ -38,3 +36,6 @@ Type this in the input box:
     }
 
 * Click 'Start execution'
+
+![diagram](state-machine.png)
+![diagram](state-machine3.png)
