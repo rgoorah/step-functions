@@ -24,13 +24,13 @@ aws cloudformation create-stack --stack-name call-center-functions --template-bo
 
 Verify it by running this command: `aws lambda list-functions` and also look at the AWS Web Console under 'Lambda'.
 
-## Step 2 - Create the state machine
-1) Update the state machine file with your AWS Account ID:
+## Step 2 - Create the call center state machine
+1) Copy the content of [this page](https://raw.githubusercontent.com/oren/step-functions/master/call-center.yml) into a file called call-center.yml
+2) Insert your AWS Account ID into call-center.yml file using this command:
 ```
 perl -i -pe"s/AWS_ACCOUNT_ID/$(aws sts get-caller-identity --output text --query 'Account')/g" call-center.yml
 ```
 
-2) Copy the content of [this page](https://raw.githubusercontent.com/oren/step-functions/master/call-center.yml) into a file called call-center.yml
 3) Create the CloudFormation stack for the state machine:
 
 ```
