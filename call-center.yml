@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "An example template with an IAM role for a Lambda state machine."
+Resources:
+  LambdaExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+
+  MyLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.handler"
+      Role: !GetAtt [ LambdaExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => {
+              callback(null, "Hello World!");
+          };
+      Runtime: "nodejs8.10"
+      Timeout: "25"
+
+  StatesExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: StatesExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: "*"
+
+  MyStateMachine:
+    Type: "AWS::StepFunctions::StateMachine"
+    Properties:
+      DefinitionString:
+        !Sub
+          - |-
+                {
+                  "Comment": "A simple AWS Step Functions state machine that automates a call center support session.",
+                  "StartAt": "Open Case",
+                  "States": {
+                    "Open Case": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:OpenCaseFunction",
+                      "Next": "Assign Case"
+                    }, 
+                    "Assign Case": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:AssignCaseFunction",
+                      "Next": "Work on Case"
+                    },
+                    "Work on Case": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:WorkOnCaseFunction",
+                      "Next": "Is Case Resolved"
+                    },
+                    "Is Case Resolved": {
+                        "Type" : "Choice",
+                        "Choices": [ 
+                          {
+                            "Variable": "$.Status",
+                            "NumericEquals": 1,
+                            "Next": "Close Case"
+                          },
+                          {
+                            "Variable": "$.Status",
+                            "NumericEquals": 0,
+                            "Next": "Escalate Case"
+                          }
+                      ]
+                    },
+                     "Close Case": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:CloseCaseFunction",
+                      "End": true
+                    },
+                    "Escalate Case": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:EscalateCaseFunction",
+                      "Next": "Fail"
+                    },
+                    "Fail": {
+                      "Type": "Fail",
+                      "Cause": "Engage Tier 2 Support."    }   
+                  }
+                }
+          - {lambdaArn: !GetAtt [ MyLambdaFunction, Arn ]}
+      RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
