@@ -12,7 +12,7 @@ Resources:
               Service: lambda.amazonaws.com
             Action: "sts:AssumeRole"
 
-  MyLambdaFunction:
+  OpenCase:
     Type: "AWS::Lambda::Function"
     Properties:
       Handler: "index.handler"
@@ -20,7 +20,11 @@ Resources:
       Code:
         ZipFile: |
           exports.handler = (event, context, callback) => {
-              callback(null, "Hello World!");
+            // Create a support case using the input as the case ID, then return a confirmation message   
+           var myCaseID = event.inputCaseID;
+           var myMessage = "Case " + myCaseID + ": opened...";   
+           var result = {Case: myCaseID, Message: myMessage};
+           callback(null, result);    
           };
       Runtime: "nodejs8.10"
       Timeout: "25"
@@ -59,7 +63,7 @@ Resources:
                   "States": {
                     "Open Case": {
                       "Type": "Task",
-                      "Resource": "arn:aws:lambda:us-east-2:463419066296:function:OpenCaseFunction",
+                      "Resource": "${OpenCaseArn}",
                       "Next": "Assign Case"
                     }, 
                     "Assign Case": {
@@ -102,5 +106,5 @@ Resources:
                       "Cause": "Engage Tier 2 Support."    }   
                   }
                 }
-          - {lambdaArn: !GetAtt [ MyLambdaFunction, Arn ]}
+          - {OpenCaseArn: !GetAtt [ OpenCase, Arn ]}
       RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
