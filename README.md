@@ -37,7 +37,7 @@ perl -i -pe"s/AWS_ACCOUNT_ID/$(aws sts get-caller-identity --output text --query
 aws cloudformation create-stack --stack-name call-center --template-body file://call-center.yml --capabilities CAPABILITY_IAM
 ```
 
-Verify it by running this command: `aws stepfunctions list-state-machines` and also look at the AWS Web Console under Step Functions.
+Verify it by running this command: `aws stepfunctions list-state-machines` and also look at the AWS Web Console under 'Step Functions'.
 
 ## Step 3 - Execute the state machine
 * Search for Step Functions at the AWS Web Console
