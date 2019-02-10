@@ -32,4 +32,4 @@ Default output format: hit enter
 ```
 aws s3 ls
 ```
-This should display your S3 buckets. If this is a new accound you will see nothing.
+This should display your S3 buckets. If this is a new account you will see nothing.
