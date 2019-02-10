@@ -1,5 +1,5 @@
 # Step Functions Code Along
-In this code along session, you will learn how to use AWS Step Functions to design and run a serverless workflow that coordinates multiple AWS Lambda functions.
+In this code along session, you will learn how to use [AWS Step Functions](https://aws.amazon.com/step-functions) to design and run a serverless workflow that coordinates multiple AWS [Lambda functions](https://aws.amazon.com/lambda).
 
 In our example, you are a developer who has been asked to create a serverless application to automate handling of support tickets in a call center. While you could have one Lambda function call the other, you worry that managing all of those connections will become challenging as the call center application becomes more sophisticated. Plus, any change in the flow of the application will require changes in multiple places, and you could end up writing the same code over and over again.
 
