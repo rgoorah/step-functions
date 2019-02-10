@@ -15,6 +15,7 @@ Resources:
   OpenCase:
     Type: "AWS::Lambda::Function"
     Properties:
+      FunctionName: "OpenCase"
       Handler: "index.handler"
       Role: !GetAtt [ LambdaExecutionRole, Arn ]
       Code:
@@ -32,6 +33,7 @@ Resources:
   AssignCase:
     Type: "AWS::Lambda::Function"
     Properties:
+      FunctionName: "AssignCase"
       Handler: "index.handler"
       Role: !GetAtt [ LambdaExecutionRole, Arn ]
       Code:
@@ -46,3 +48,68 @@ Resources:
       Runtime: "nodejs8.10"
       Timeout: "25"
 
+  WorkOnCase:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "WorkOnCase"
+      Handler: "index.handler"
+      Role: !GetAtt [ LambdaExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => {    
+            // Generate a random number to determine whether the support case has been resolved, then return that value along with the updated message.
+            var min = 0;
+            var max = 1;    
+            var myCaseStatus = Math.floor(Math.random() * (max - min + 1)) + min;
+            var myCaseID = event.Case;
+            var myMessage = event.Message;
+            if (myCaseStatus == 1) {
+                // Support case has been resolved    
+                myMessage = myMessage + "resolved...";
+            } else if (myCaseStatus == 0) {
+                // Support case is still open
+                myMessage = myMessage + "unresolved...";
+            } 
+            var result = {Case: myCaseID, Status : myCaseStatus, Message: myMessage};
+            callback(null, result); 
+          };
+      Runtime: "nodejs8.10"
+      Timeout: "25"
+
+  EscalateCase:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "EscalateCase"
+      Handler: "index.handler"
+      Role: !GetAtt [ LambdaExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => {    
+            // Escalate the support case 
+            var myCaseID = event.Case;    
+            var myCaseStatus = event.Status;    
+            var myMessage = event.Message + "escalating.";    
+            var result = {Case: myCaseID, Status : myCaseStatus, Message: myMessage};
+            callback(null, result);
+          };
+      Runtime: "nodejs8.10"
+      Timeout: "25"
+
+  CloseCase:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "CloseCase"
+      Handler: "index.handler"
+      Role: !GetAtt [ LambdaExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => { 
+            // Close the support case    
+            var myCaseStatus = event.Status;    
+            var myCaseID = event.Case;    
+            var myMessage = event.Message + "closed.";    
+            var result = {Case: myCaseID, Status : myCaseStatus, Message: myMessage};
+            callback(null, result);
+          };
+      Runtime: "nodejs8.10"
+      Timeout: "25"
