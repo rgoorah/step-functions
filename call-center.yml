@@ -1,34 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "An example template with an IAM role for a Lambda state machine."
 Resources:
-  LambdaExecutionRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: "sts:AssumeRole"
-
-  OpenCase:
-    Type: "AWS::Lambda::Function"
-    Properties:
-      Handler: "index.handler"
-      Role: !GetAtt [ LambdaExecutionRole, Arn ]
-      Code:
-        ZipFile: |
-          exports.handler = (event, context, callback) => {
-            // Create a support case using the input as the case ID, then return a confirmation message   
-           var myCaseID = event.inputCaseID;
-           var myMessage = "Case " + myCaseID + ": opened...";   
-           var result = {Case: myCaseID, Message: myMessage};
-           callback(null, result);    
-          };
-      Runtime: "nodejs8.10"
-      Timeout: "25"
-
   StatesExecutionRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -106,5 +78,5 @@ Resources:
                       "Cause": "Engage Tier 2 Support."    }   
                   }
                 }
-          - {OpenCaseArn: !GetAtt [ OpenCase, Arn ]}
+          - {}
       RoleArn: !GetAtt [ StatesExecutionRole, Arn ]

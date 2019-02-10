@@ -17,7 +17,7 @@ You'll use AWS Step Functions and AWS Lambda in this tutorial. These services ar
 ## Step 1 - Create Lambda functions
 Create the CloudFormation stack for the Lambda functions:
 ```
-aws cloudformation create-stack --stack-name functions --template-body file://call-center-functions.yml --capabilities CAPABILITY_IAM
+aws cloudformation create-stack --stack-name call-center-functions --template-body file://call-center-functions.yml --capabilities CAPABILITY_IAM
 ```
 
 Verify it by running this command: `aws lambda list-functions` and also look at the AWS Web Console under 'Lambda'.
