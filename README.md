@@ -38,3 +38,26 @@ Default output format: hit enter
 aws s3 ls
 ```
 This should display your S3 buckets. If this is a new accound you will see nothing.
+
+## Create 5 Functions using Cloud Formation
+aws cloudformation create-stack --stack-name functions --template-body file://functions.yml --capabilities CAPABILITY_IAM
+
+Verify: `aws lambda list-functions`
+
+## Create the call center state machine using Cloud Formation
+aws cloudformation create-stack --stack-name call-center --template-body file://call-center.yml --capabilities CAPABILITY_IAM
+
+Verify: `aws cloudformation list-stacks`
+
+## Execute the call center state machine
+* Search for Step Functions
+* Click on MyStateMachine
+* Click 'Start execution'
+
+Type this in the input box
+```
+{
+"inputCaseID": "001"
+}
+```
+* Click 'Start execution'
