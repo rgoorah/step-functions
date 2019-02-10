@@ -38,4 +38,5 @@ Type this in the input box:
 * Click 'Start execution'
 
 ![diagram](state-machine.png)
+
 ![diagram](state-machine3.png)
