@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-* [What is this tutorial?](#what-is-this-tutorial?)
+* [What is this tutorial?](#what-is-this-tutorial)
 * [Step 0 - Prerequisites](#step-0---prerequisites)
 * [Step 1 - Create Lambda functions](#step-1---create-lambda-functions)
 * [Step 2 - Create the call center state machine](#step-2---create-the-call-center-state-machine)
