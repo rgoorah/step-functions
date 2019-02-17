@@ -1,0 +1,33 @@
+{
+  "Comment": "CodeAlong",
+  "StartAt": "Find Tweet",
+  "States": {
+    "Find Tweet": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:071476240988:function:TweetPoller",
+      "ResultPath": "$.tweet",
+      "Next": "Generate Message"
+    },
+    "Generate Message": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:071476240988:function:createSMSMessage",
+      "InputPath": "$.tweet",
+      "ResultPath": "$.message",
+      "Next": "Message"
+    },
+    "Message": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$.message",
+        "PhoneNumber.$": "$.phoneNumber"
+      },
+      "Next": "Final State"
+    },
+    "Final State": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}
+

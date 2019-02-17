@@ -1,0 +1,77 @@
+{
+  "Comment": "CodeAlong",
+  "StartAt": "Find Tweet",
+  "States": {
+    "Find Tweet": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:071476240988:function:TweetPoller",
+      "ResultPath": "$.tweet",
+      "Next": "Parallel"
+    },
+    "Parallel": {
+      "Type": "Parallel",
+      "Next": "Final State",
+      "Branches": [
+        {
+          "StartAt": "Wait 10s",
+          "States": {
+            "Wait 10s": {
+              "Type": "Wait",
+              "Seconds": 10,
+              "Next": "Generate Message"
+            },
+            "Generate Message": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-west-2:071476240988:function:createSMSMessage",
+              "InputPath": "$.tweet",
+              "ResultPath": "$.message",
+              "Next": "Message"
+            },
+            "Message": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                  "Message.$": "$.message",
+                  "PhoneNumber.$": "$.phoneNumber"
+                },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Put an item",
+          "States": {
+            "Put an item": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::dynamodb:putItem",
+              "Parameters": {
+                "TableName": "tweetTable",
+                "Item": {
+                    "SearchText": {
+                    "S.$": "$.searchText"
+                     },
+
+                    "Id": {
+                    "S.$": "$.tweet.body.id_str"
+                     },
+
+                    "User": {
+                    "S.$": "$.tweet.body.user.screen_name"
+                     }
+
+                }
+              },
+            "End": true
+            }
+          }
+        }
+      ]
+    },
+
+    "Final State": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}
+

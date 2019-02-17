@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "An example template with an IAM role for a Lambda state machine."
+Resources:
+  StatesExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: StatesExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "dynamodb:*",
+                  - "sns:*"
+                  - "lambda:InvokeFunction"
+                Resource: "*"
+
+ GenerateMessage:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "GenerateMessage"
+      Handler: "lambda_function.lambda_handler"
+      Role: !GetAtt [ StatesExecutionRole, Arn ]
+      Code:
+        ZipFile: |
+            import json
+
+                def lambda_handler(event, context):
+                user = event['body']['user']['screen_name']
+                id_str = event['body']['id_str']
+
+                url = "https://twitter.com/" + user + "/status/" + id_str
+
+                message = "Here's an neet tweet: " + url
+
+                return message
+      Runtime: "Python 3.7"
+      Timeout: "2000"
+
+  TweetBotStateMachine:
+    Type: "AWS::StepFunctions::StateMachine"
+    Properties:
+      StateMachineName: "TweetBot"
+      DefinitionString:
+        !Sub
+          - |-
+                {
+                  "Comment": "A Hello World example of the Amazon States Language using a Pass state",
+                  "StartAt": "HelloWorld",
+                  "States": {
+                    "HelloWorld": {
+                      "Type": "Pass",
+                      "Result": "Hello World!",
+                      "End": true
+                    }
+                  }
+                }
+          - {}
+      RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
