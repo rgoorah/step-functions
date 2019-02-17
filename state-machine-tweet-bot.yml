@@ -11,6 +11,7 @@ Resources:
             Principal:
               Service:
                 - !Sub states.${AWS::Region}.amazonaws.com
+                - lambda.amazonaws.com
             Action: "sts:AssumeRole"
       Path: "/"
       Policies:
@@ -20,12 +21,11 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "dynamodb:*",
+                  - "dynamodb:*"
                   - "sns:*"
                   - "lambda:InvokeFunction"
                 Resource: "*"
-
- GenerateMessage:
+  GenerateMessage:
     Type: "AWS::Lambda::Function"
     Properties:
       FunctionName: "GenerateMessage"
@@ -35,17 +35,26 @@ Resources:
         ZipFile: |
             import json
 
-                def lambda_handler(event, context):
+            def lambda_handler(event, context):
                 user = event['body']['user']['screen_name']
                 id_str = event['body']['id_str']
-
                 url = "https://twitter.com/" + user + "/status/" + id_str
-
                 message = "Here's an neet tweet: " + url
-
                 return message
-      Runtime: "Python 3.7"
-      Timeout: "2000"
+      Runtime: "python3.7"
+      Timeout: "200"
+
+  PollForTweet:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "PollForTweet"
+      Handler: poller.handler
+      Runtime: "python3.7"
+      Timeout: "200"
+      Role: !GetAtt [ StatesExecutionRole, Arn ]
+      Code:
+        S3Bucket: "code-along-mar1"
+        S3Key: "Archive.zip"
 
   TweetBotStateMachine:
     Type: "AWS::StepFunctions::StateMachine"
@@ -54,16 +63,42 @@ Resources:
       DefinitionString:
         !Sub
           - |-
-                {
-                  "Comment": "A Hello World example of the Amazon States Language using a Pass state",
-                  "StartAt": "HelloWorld",
-                  "States": {
-                    "HelloWorld": {
-                      "Type": "Pass",
-                      "Result": "Hello World!",
-                      "End": true
-                    }
-                  }
+            {
+              "Comment": "CodeAlong",
+              "StartAt": "Find Tweet",
+              "States": {
+                "Find Tweet": {
+                  "Type": "Task",
+                  "Resource": "arn:aws:lambda:us-west-2:071476240988:function:TweetPoller",
+                  "ResultPath": "$.tweet",
+                  "Next": "Wait 10s"
+                },
+                "Wait 10s": {
+                    "Type": "Wait",
+                    "Seconds": 10,
+                    "Next": "Generate Message"
+                },
+                "Generate Message": {
+                  "Type": "Task",
+                  "Resource": "arn:aws:lambda:us-west-2:071476240988:function:createSMSMessage",
+                  "InputPath": "$.tweet",
+                  "ResultPath": "$.message",
+                  "Next": "Message"
+                },
+                "Message": {
+                  "Type": "Task",
+                  "Resource": "arn:aws:states:::sns:publish",
+                  "Parameters": {
+                    "Message.$": "$.message",
+                    "PhoneNumber.$": "$.phoneNumber"
+                  },
+                  "Next": "Final State"
+                },
+                "Final State": {
+                  "Type": "Pass",
+                  "End": true
                 }
+              }
+            }
           - {}
       RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
