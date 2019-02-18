@@ -57,8 +57,11 @@
 
                     "User": {
                     "S.$": "$.tweet.body.user.screen_name"
-                     }
+                     },
 
+                    "Tweet": {
+                    "S.$": "$.tweet.body.full_text"
+                     }
                 }
               },
             "End": true
