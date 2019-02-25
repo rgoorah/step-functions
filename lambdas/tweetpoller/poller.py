@@ -1,12 +1,6 @@
 """Lambda handler for polling twitter API with configured search."""
 
-import lambdainit  # noqa: F401
-
-import boto3
-
 import twitter_proxy
-
-LAMBDA = boto3.client('lambda')
 
 def handler(event, context):
     print("Starting Poller")

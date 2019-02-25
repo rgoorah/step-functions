@@ -29,18 +29,16 @@ Resources:
     Type: "AWS::Lambda::Function"
     Properties:
       FunctionName: "GenerateMessage"
-      Handler: "lambda_function.lambda_handler"
+      Handler: index.lambda_handler
       Role: !GetAtt [ StatesExecutionRole, Arn ]
       Code:
         ZipFile: |
-            import json
-
-            def lambda_handler(event, context):
-                user = event['body']['user']['screen_name']
-                id_str = event['body']['id_str']
-                url = "https://twitter.com/" + user + "/status/" + id_str
-                message = "Here's an neet tweet: " + url
-                return message
+          def lambda_handler(event, context):
+            user = event['body']['user']['screen_name']
+            id_str = event['body']['id_str']
+            url = "https://twitter.com/" + user + "/status/" + id_str
+            message = "Here's an neat tweet: " + url
+            return message
       Runtime: "python3.7"
       Timeout: "200"
 
@@ -53,8 +51,9 @@ Resources:
       Timeout: "200"
       Role: !GetAtt [ StatesExecutionRole, Arn ]
       Code:
-        S3Bucket: "code-along-mar1"
-        S3Key: "Archive.zip"
+        ZipFile: |
+          def handler(event, context):
+            print("Hello World.")
 
   TweetBotStateMachine:
     Type: "AWS::StepFunctions::StateMachine"
@@ -69,22 +68,25 @@ Resources:
               "States": {
                 "Find Tweet": {
                   "Type": "Task",
-                  "Resource": "arn:aws:lambda:us-west-2:071476240988:function:TweetPoller",
+                  "Resource": "arn:aws:lambda:us-west-2:${AWS::AccountId}:function:PollForTweet",
                   "ResultPath": "$.tweet",
+                  "Next": "Generate Message"
+                },
+
+                "Generate Message": {
+                  "Type": "Task",
+                  "Resource": "arn:aws:lambda:us-west-2:${AWS::AccountId}:function:GenerateMessage",
+                  "InputPath": "$.tweet",
+                  "ResultPath": "$.message",
                   "Next": "Wait 10s"
                 },
+
                 "Wait 10s": {
                     "Type": "Wait",
                     "Seconds": 10,
-                    "Next": "Generate Message"
+                    "Next": "Message"
                 },
-                "Generate Message": {
-                  "Type": "Task",
-                  "Resource": "arn:aws:lambda:us-west-2:071476240988:function:createSMSMessage",
-                  "InputPath": "$.tweet",
-                  "ResultPath": "$.message",
-                  "Next": "Message"
-                },
+
                 "Message": {
                   "Type": "Task",
                   "Resource": "arn:aws:states:::sns:publish",

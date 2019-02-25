@@ -6,8 +6,16 @@
       "Type": "Task",
       "Resource": "arn:aws:lambda:us-west-2:071476240988:function:TweetPoller",
       "ResultPath": "$.tweet",
+      "Next": "Message"
+    },
+    "Generate Message": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:071476240988:function:createSMSMessage",
+      "InputPath": "$.tweet",
+      "ResultPath": "$.message",
       "Next": "Parallel"
     },
+
     "Parallel": {
       "Type": "Parallel",
       "Next": "Final State",
@@ -19,13 +27,6 @@
               "Type": "Wait",
               "Seconds": 10,
               "Next": "Generate Message"
-            },
-            "Generate Message": {
-              "Type": "Task",
-              "Resource": "arn:aws:lambda:us-west-2:071476240988:function:createSMSMessage",
-              "InputPath": "$.tweet",
-              "ResultPath": "$.message",
-              "Next": "Message"
             },
             "Message": {
               "Type": "Task",
