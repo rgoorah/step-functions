@@ -4,6 +4,7 @@ import twitter_proxy
 
 def handler(event, context):
     print("Starting Poller")
+
     batch = _search_batches(event['searchText'])
 
     return {
@@ -22,3 +23,4 @@ def _search_batches(searchText):
         tweets = result['statuses']
 
         return tweets[0:1]
+
